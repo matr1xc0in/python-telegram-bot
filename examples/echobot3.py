@@ -28,6 +28,17 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
+def decision_tree(argument):
+    switcher = {
+        'start': start,
+        'help': help,
+        'menu': menu
+    }
+    # Get the function from switcher dictionary
+    func = switcher.get(argument, lambda: "")
+    # Execute the function
+    func()
+
 
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
@@ -38,18 +49,24 @@ def start(bot, update):
 
 def help(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Help!????')
 
+
+def menu(bot, update):
+    """Send the menu we want when /menu is issued"""
+    update.message.reply_text("1. see catalog\n2. call awesome support\n3.just chilling")
 
 def echo(bot, update):
     """Echo the user message."""
+    rcv_msg = update.message.text
     update.message.reply_text(update.message.text)
+    logger.info('Somebody wanna talk to me, rcv msg: "%s"', rcv_msg)
+    decision_tree(rcv_msg)
 
 
 def error(bot, update, error):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
-
 
 def main():
     """Start the bot."""
@@ -64,6 +81,7 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("menu", menu))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
